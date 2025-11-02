@@ -1,0 +1,14 @@
+com\example\demo\DemoApplication.class
+com\example\demo\controllers\HomeController.class
+com\example\demo\controllers\AdminController.class
+com\example\demo\repositories\ProduitRepository.class
+com\example\demo\controllers\ProduitController.class
+com\example\demo\entities\Client.class
+com\example\demo\entities\Produit.class
+com\example\demo\services\StatisticsService.class
+com\example\demo\repositories\ClientRepository.class
+com\example\demo\controllers\ClientController.class
+com\example\demo\entities\CommandePk.class
+com\example\demo\repositories\CommandeRepository.class
+com\example\demo\entities\Commande.class
+com\example\demo\controllers\CommandeController.class

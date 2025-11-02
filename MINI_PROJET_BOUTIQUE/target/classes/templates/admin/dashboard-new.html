@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/layout :: head">
+    <title>Dashboard - Admin Boutique</title>
+</head>
+<body>
+    <div th:replace="admin/layout :: content">
+        <div th:fragment="content" xmlns:th="http://www.thymeleaf.org">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">
+                    <i class="bi bi-speedometer2 text-primary"></i> Tableau de Bord
+                </h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshDashboard()">
+                            <i class="bi bi-arrow-clockwise"></i> Actualiser
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-download"></i> Exporter
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card stat-card bg-primary text-white h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title mb-2">Total Clients</h5>
+                                    <h3 class="mb-0" th:text="${totalClients}">0</h3>
+                                    <small class="opacity-75">
+                                        <i class="bi bi-people-fill"></i> Actifs
+                                    </small>
+                                </div>
+                                <div class="fs-1 opacity-50">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card stat-card bg-success text-white h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title mb-2">Total Produits</h5>
+                                    <h3 class="mb-0" th:text="${totalProduits}">0</h3>
+                                    <small class="opacity-75">
+                                        <i class="bi bi-box-seam"></i> Catalogue
+                                    </small>
+                                </div>
+                                <div class="fs-1 opacity-50">
+                                    <i class="bi bi-box"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card stat-card bg-warning text-white h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title mb-2">Total Commandes</h5>
+                                    <h3 class="mb-0" th:text="${totalCommandes}">0</h3>
+                                    <small class="opacity-75">
+                                        <i class="bi bi-cart-check"></i> Traitement
+                                    </small>
+                                </div>
+                                <div class="fs-1 opacity-50">
+                                    <i class="bi bi-cart"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card stat-card bg-info text-white h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title mb-2">Chiffre d'Affaires</h5>
+                                    <h3 class="mb-0" th:text="${#numbers.formatDecimal(totalRevenue, 0, 2)} + ' MAD'">0 MAD</h3>
+                                    <small class="opacity-75">
+                                        <i class="bi bi-graph-up"></i> Total
+                                    </small>
+                                </div>
+                                <div class="fs-1 opacity-50">
+                                    <i class="bi bi-cash-coin"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="row mb-4">
+                <div class="col-lg-8 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="bi bi-graph-up text-primary"></i> Évolution des Ventes
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="salesChart" height="100"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="bi bi-pie-chart text-success"></i> Répartition des Stocks
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="stockChart" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Statistics -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="mb-0">
+                                <i class="bi bi-box-seam"></i> État des Stocks
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span><i class="bi bi-check-circle text-success"></i> En stock</span>
+                                    <span class="badge bg-success fs-6" th:text="${produitsEnStock}">0</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" th:style="'width: ' + ${totalProduits > 0 ? (produitsEnStock * 100 / totalProduits) : 0} + '%'"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span><i class="bi bi-x-circle text-danger"></i> En rupture</span>
+                                    <span class="badge bg-danger fs-6" th:text="${produitsEnRupture}">0</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-danger" th:style="'width: ' + ${totalProduits > 0 ? (produitsEnRupture * 100 / totalProduits) : 0} + '%'"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-warning text-white">
+                            <h6 class="mb-0">
+                                <i class="bi bi-cart"></i> Commandes en Attente
+                            </h6>
+                        </div>
+                        <div class="card-body text-center">
+                            <h2 class="text-warning mb-3" th:text="${commandesEnAttente}">0</h2>
+                            <p class="text-muted">Commandes à traiter</p>
+                            <button class="btn btn-warning btn-sm">
+                                <i class="bi bi-eye"></i> Voir les détails
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">
+                                <i class="bi bi-trophy"></i> Top Produits
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li th:each="entry, iterStat : ${topProduits}" class="mb-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="badge bg-secondary me-2" th:text="${iterStat.index + 1}">1</span>
+                                            <small th:text="${#strings.abbreviate(entry.key, 20)}">Produit</small>
+                                        </div>
+                                        <span class="badge bg-info" th:text="${entry.value} + ' ventes'">0</span>
+                                    </div>
+                                </li>
+                                <li th:if="${#maps.isEmpty(topProduits)}" class="text-center text-muted">
+                                    <small>Aucune vente enregistrée</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders Table -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-clock-history"></i> Commandes Récentes
+                                </h6>
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-list-ul"></i> Voir tout
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><i class="bi bi-hash"></i> ID</th>
+                                            <th><i class="bi bi-person"></i> Client</th>
+                                            <th><i class="bi bi-box"></i> Produit</th>
+                                            <th><i class="bi bi-calendar"></i> Date</th>
+                                            <th><i class="bi bi-info-circle"></i> Statut</th>
+                                            <th><i class="bi bi-cash-coin"></i> Total</th>
+                                            <th><i class="bi bi-gear"></i> Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="commande : ${recentCommandes}">
+                                            <td th:text="${commande.id.commandeId}">-</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi bi-person-circle text-primary me-2"></i>
+                                                    <span th:text="${commande.client != null ? commande.client.nom : '-'}">-</span>
+                                                </div>
+                                            </td>
+                                            <td th:text="${commande.produit != null ? commande.produit.nom : '-'}">-</td>
+                                            <td>
+                                                <small th:text="${commande.id.dateCreation != null ? #temporals.format(commande.id.dateCreation, 'dd/MM/yyyy') : '-'}">-</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge" 
+                                                      th:classappend="${commande.statut == 'EN_ATTENTE'} ? 'bg-warning' : 
+                                                                      ${commande.statut == 'TERMINEE'} ? 'bg-success' : 'bg-secondary'"
+                                                      th:text="${commande.statut}">-</span>
+                                            </td>
+                                            <td class="fw-bold" th:text="${commande.total != null ? #numbers.formatDecimal(commande.total, 0, 2) + ' MAD' : '-'}">-</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-primary" title="Voir">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-success" title="Éditer">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(recentCommandes)}">
+                                            <td colspan="7" class="text-center text-muted py-4">
+                                                <i class="bi bi-inbox fs-1"></i>
+                                                <p class="mb-0">Aucune commande récente</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // Chart.js configurations
+        const ctx1 = document.getElementById('salesChart').getContext('2d');
+        const salesChart = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
+                datasets: [{
+                    label: 'Ventes (MAD)',
+                    data: [/*[[${totalRevenue}]]*/],
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const ctx2 = document.getElementById('stockChart').getContext('2d');
+        const stockChart = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['En stock', 'En rupture'],
+                datasets: [{
+                    data: [[${produitsEnStock}]], [[${produitsEnRupture}]]],
+                    backgroundColor: [
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(220, 53, 69, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(220, 53, 69, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        function refreshDashboard() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>

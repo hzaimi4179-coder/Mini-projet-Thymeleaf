@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier un Produit - Boutique</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="bi bi-shop"></i> Ma Boutique
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/}">
+                    <i class="bi bi-house"></i> Accueil
+                </a>
+                <a class="nav-link" th:href="@{/admin/dashboard}">
+                    <i class="bi bi-speedometer2"></i> Admin
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="form-container">
+            <div class="text-center mb-4">
+                <h2 class="mb-3">
+                    <i class="bi bi-box-gear text-success"></i> 
+                    Modifier le Produit
+                </h2>
+                <p class="text-muted">Mettez à jour les informations du produit</p>
+            </div>
+
+            <form th:action="@{/produits/update/{id}(id=${produit.id})}" th:object="${produit}" method="post">
+                <input type="hidden" th:field="*{id}"/>
+                
+                <div class="mb-3">
+                    <label for="nom" class="form-label">
+                        <i class="bi bi-tag"></i> Nom du Produit
+                    </label>
+                    <input type="text" th:field="*{nom}" class="form-control" id="nom" placeholder="Entrez le nom du produit" required>
+                    <div th:if="${#fields.hasErrors('nom')}" class="text-danger small mt-1">
+                        <span th:errors="*{nom}"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="categorie" class="form-label">
+                        <i class="bi bi-grid"></i> Catégorie
+                    </label>
+                    <select th:field="*{categorie}" class="form-control" id="categorie" required>
+                        <option value="">Sélectionnez une catégorie</option>
+                        <option value="Électronique">Électronique</option>
+                        <option value="Vêtements">Vêtements</option>
+                        <option value="Alimentation">Alimentation</option>
+                        <option value="Livres">Livres</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Maison">Maison</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('categorie')}" class="text-danger small mt-1">
+                        <span th:errors="*{categorie}"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="prix" class="form-label">
+                        <i class="bi bi-cash-coin"></i> Prix (MAD)
+                    </label>
+                    <input type="number" th:field="*{prix}" class="form-control" id="prix" placeholder="0.00" step="0.01" min="0" required>
+                    <div th:if="${#fields.hasErrors('prix')}" class="text-danger small mt-1">
+                        <span th:errors="*{prix}"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="stock" class="form-label">
+                        <i class="bi bi-box-seam"></i> Quantité en Stock
+                    </label>
+                    <input type="number" th:field="*{stock}" class="form-control" id="stock" placeholder="0" min="0" required>
+                    <div th:if="${#fields.hasErrors('stock')}" class="text-danger small mt-1">
+                        <span th:errors="*{stock}"></span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input type="checkbox" th:field="*{statut}" class="form-check-input" id="statut">
+                        <label class="form-check-label" for="statut">
+                            <i class="bi bi-check-circle"></i> Produit disponible (en stock)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-check-circle"></i> Mettre à jour le Produit
+                    </button>
+                    <a th:href="@{/}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour à l'accueil
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

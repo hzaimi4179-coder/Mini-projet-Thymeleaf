@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Admin Boutique</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --zellij-red: #c41e3a;
+            --zellij-blue: #0066cc;
+            --zellij-green: #00a651;
+            --zellij-gold: #f4c430;
+            --zellij-orange: #ff6b35;
+            --zellij-dark: #2c3e50;
+            --zellij-light: #ecf0f1;
+            --zellij-pink: #e75480;
+            --zellij-purple: #8b4789;
+        }
+        
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--zellij-red), var(--zellij-orange));
+            box-shadow: 2px 0 10px rgba(196, 30, 58, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, var(--zellij-gold) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, var(--zellij-blue) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, var(--zellij-green) 0%, transparent 50%);
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 12px 20px;
+            margin: 5px 10px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            background-color: #fafafa;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(244, 196, 48, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(0, 102, 204, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(196, 30, 58, 0.03) 0%, transparent 50%);
+        }
+        
+        .stat-card {
+            border: none;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(196, 30, 58, 0.2);
+        }
+        
+        .stat-card:hover::before {
+            top: -30%;
+            right: -30%;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(196, 30, 58, 0.1);
+        }
+        
+        .card:hover {
+            box-shadow: 0 5px 20px rgba(196, 30, 58, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: var(--zellij-red);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: var(--zellij-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(196, 30, 58, 0.3);
+        }
+        
+        .btn-outline-primary {
+            color: var(--zellij-red);
+            border-color: var(--zellij-red);
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--zellij-red);
+            border-color: var(--zellij-red);
+            transform: translateY(-2px);
+        }
+        
+        .badge {
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+        
+        .progress {
+            border-radius: 10px;
+            height: 10px;
+            background-color: rgba(196, 30, 58, 0.1);
+        }
+        
+        .progress-bar {
+            border-radius: 10px;
+        }
+        
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: var(--zellij-dark);
+            font-size: 0.9rem;
+            background-color: rgba(244, 196, 48, 0.1);
+        }
+        
+        .zellij-title {
+            background: linear-gradient(135deg, var(--zellij-red), var(--zellij-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+        
+        .navbar-brand {
+            color: var(--zellij-red) !important;
+            font-weight: bold;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, rgba(244, 196, 48, 0.1), rgba(255, 107, 53, 0.1));
+            border-bottom: 2px solid var(--zellij-gold);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-4">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white">
+                            <i class="bi bi-shop-fill me-2"></i> Boutique Admin
+                        </h4>
+                        <small class="text-white-50">Panel de gestion</small>
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/admin/dashboard}">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/clients/signup}">
+                                <i class="bi bi-person-plus"></i> Ajouter Client
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/produits/signup}">
+                                <i class="bi bi-box-plus"></i> Ajouter Produit
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/commandes}">
+                                <i class="bi bi-cart-check"></i> Commandes
+                            </a>
+                        </li>
+                        <li class="nav-item mt-4">
+                            <a class="nav-link" th:href="@{/}">
+                                <i class="bi bi-house-door"></i> Retour au site
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">
+                        <i class="bi bi-speedometer2 zellij-title"></i> Tableau de Bord - Boutique Marocaine
+                    </h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshDashboard()">
+                                <i class="bi bi-arrow-clockwise"></i> Actualiser
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-download"></i> Exporter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stat-card bg-primary text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h5 class="card-title mb-2">Total Clients</h5>
+                                        <h3 class="mb-0" th:text="${totalClients}">0</h3>
+                                        <small class="opacity-75">
+                                            <i class="bi bi-people-fill"></i> Actifs
+                                        </small>
+                                    </div>
+                                    <div class="fs-1 opacity-50">
+                                        <i class="bi bi-people"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stat-card bg-success text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h5 class="card-title mb-2">Total Produits</h5>
+                                        <h3 class="mb-0" th:text="${totalProduits}">0</h3>
+                                        <small class="opacity-75">
+                                            <i class="bi bi-box-seam"></i> Catalogue
+                                        </small>
+                                    </div>
+                                    <div class="fs-1 opacity-50">
+                                        <i class="bi bi-box"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stat-card bg-warning text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h5 class="card-title mb-2">Total Commandes</h5>
+                                        <h3 class="mb-0" th:text="${totalCommandes}">0</h3>
+                                        <small class="opacity-75">
+                                            <i class="bi bi-cart-check"></i> Traitement
+                                        </small>
+                                    </div>
+                                    <div class="fs-1 opacity-50">
+                                        <i class="bi bi-cart"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stat-card bg-info text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h5 class="card-title mb-2">Chiffre d'Affaires</h5>
+                                        <h3 class="mb-0" th:text="${#numbers.formatDecimal(totalRevenue, 0, 2)} + ' MAD'">0 MAD</h3>
+                                        <small class="opacity-75">
+                                            <i class="bi bi-graph-up"></i> Total
+                                        </small>
+                                    </div>
+                                    <div class="fs-1 opacity-50">
+                                        <i class="bi bi-cash-coin"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="row mb-4">
+                    <div class="col-lg-8 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-graph-up text-primary"></i> Évolution des Ventes
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="salesChart" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-pie-chart text-success"></i> Répartition des Stocks
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="stockChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Statistics -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-box-seam"></i> État des Stocks
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span><i class="bi bi-check-circle text-success"></i> En stock</span>
+                                        <span class="badge bg-success fs-6" th:text="${produitsEnStock}">0</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-success" th:style="'width: ' + ${totalProduits > 0 ? (produitsEnStock * 100 / totalProduits) : 0} + '%'"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span><i class="bi bi-x-circle text-danger"></i> En rupture</span>
+                                        <span class="badge bg-danger fs-6" th:text="${produitsEnRupture}">0</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-danger" th:style="'width: ' + ${totalProduits > 0 ? (produitsEnRupture * 100 / totalProduits) : 0} + '%'"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-warning text-white">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-cart"></i> Commandes en Attente
+                                </h6>
+                            </div>
+                            <div class="card-body text-center">
+                                <h2 class="text-warning mb-3" th:text="${commandesEnAttente}">0</h2>
+                                <p class="text-muted">Commandes à traiter</p>
+                                <button class="btn btn-warning btn-sm">
+                                    <i class="bi bi-eye"></i> Voir les détails
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-trophy"></i> Top Produits
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled mb-0">
+                                    <li th:each="entry, iterStat : ${topProduits}" class="mb-2">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span class="badge bg-secondary me-2" th:text="${iterStat.index + 1}">1</span>
+                                                <small th:text="${#strings.abbreviate(entry.key, 20)}">Produit</small>
+                                            </div>
+                                            <span class="badge bg-info" th:text="${entry.value} + ' ventes'">0</span>
+                                        </div>
+                                    </li>
+                                    <li th:if="${#maps.isEmpty(topProduits)}" class="text-center text-muted">
+                                        <small>Aucune vente enregistrée</small>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders Table -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-clock-history"></i> Commandes Récentes
+                                    </h6>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-list-ul"></i> Voir tout
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th><i class="bi bi-hash"></i> ID</th>
+                                                <th><i class="bi bi-person"></i> Client</th>
+                                                <th><i class="bi bi-box"></i> Produit</th>
+                                                <th><i class="bi bi-calendar"></i> Date</th>
+                                                <th><i class="bi bi-info-circle"></i> Statut</th>
+                                                <th><i class="bi bi-cash-coin"></i> Total</th>
+                                                <th><i class="bi bi-gear"></i> Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="commande : ${recentCommandes}">
+                                                <td th:text="${commande.id.clientId + '-' + commande.id.produitId}">-</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-person-circle text-primary me-2"></i>
+                                                        <span th:text="${commande.client != null ? commande.client.nom : '-'}">-</span>
+                                                    </div>
+                                                </td>
+                                                <td th:text="${commande.produit != null ? commande.produit.nom : '-'}">-</td>
+                                                <td>
+                                                    <small th:text="${commande.id.dateCreation != null ? #temporals.format(commande.id.dateCreation, 'dd/MM/yyyy') : '-'}">-</small>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-warning" th:if="${commande.statut == 'EN_ATTENTE'}" th:text="${commande.statut}">EN_ATTENTE</span>
+                                                    <span class="badge bg-info" th:if="${commande.statut == 'CONFIRMEE'}" th:text="${commande.statut}">CONFIRMEE</span>
+                                                    <span class="badge bg-primary" th:if="${commande.statut == 'EN_PREPARATION'}" th:text="${commande.statut}">EN_PREPARATION</span>
+                                                    <span class="badge bg-secondary" th:if="${commande.statut == 'EXPEDIEE'}" th:text="${commande.statut}">EXPEDIEE</span>
+                                                    <span class="badge bg-success" th:if="${commande.statut == 'TERMINEE'}" th:text="${commande.statut}">TERMINEE</span>
+                                                    <span class="badge bg-danger" th:if="${commande.statut != null and commande.statut != 'EN_ATTENTE' and commande.statut != 'CONFIRMEE' and commande.statut != 'EN_PREPARATION' and commande.statut != 'EXPEDIEE' and commande.statut != 'TERMINEE'}" th:text="${commande.statut}">Autre</span>
+                                                </td>
+                                                <td class="fw-bold" th:text="${commande.total != null ? #numbers.formatDecimal(commande.total, 0, 2) + ' MAD' : '-'}">-</td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <button class="btn btn-outline-primary" title="Voir">
+                                                            <i class="bi bi-eye"></i>
+                                                        </button>
+                                                        <button class="btn btn-outline-success" title="Éditer">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr th:if="${#lists.isEmpty(recentCommandes)}">
+                                                <td colspan="7" class="text-center text-muted py-4">
+                                                    <i class="bi bi-inbox fs-1"></i>
+                                                    <p class="mb-0">Aucune commande récente</p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sales Chart
+            const ctx1 = document.getElementById('salesChart');
+            if (ctx1) {
+                new Chart(ctx1.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
+                        datasets: [{
+                            label: 'Ventes (MAD)',
+                            data: [1200, 1900, 3000, 5000, 2000, 3000, 4500, 3200, 2800, 3500, 4200, 5000],
+                            borderColor: 'rgb(196, 30, 58)',
+                            backgroundColor: 'rgba(196, 30, 58, 0.2)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Stock Chart
+            const ctx2 = document.getElementById('stockChart');
+            if (ctx2) {
+                const produitsEnStock = /*[[${produitsEnStock}]]*/ 5;
+                const produitsEnRupture = /*[[${produitsEnRupture}]]*/ 2;
+                
+                new Chart(ctx2.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['En stock', 'En rupture'],
+                        datasets: [{
+                            data: [produitsEnStock, produitsEnRupture],
+                            backgroundColor: [
+                                'rgba(0, 166, 81, 0.8)',
+                                'rgba(196, 30, 58, 0.8)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

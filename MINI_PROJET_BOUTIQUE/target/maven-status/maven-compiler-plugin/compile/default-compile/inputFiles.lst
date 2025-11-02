@@ -1,0 +1,14 @@
+C:\Users\hp probook\Downloads\MINI_PROJET_BOUTIQUE\MINI_PROJET_BOUTIQUE\src\main\java\com\example\demo\controllers\AdminController.java
+C:\Users\hp probook\Downloads\MINI_PROJET_BOUTIQUE\MINI_PROJET_BOUTIQUE\src\main\java\com\example\demo\controllers\ClientController.java
+C:\Users\hp probook\Downloads\MINI_PROJET_BOUTIQUE\MINI_PROJET_BOUTIQUE\src\main\java\com\example\demo\controllers\CommandeController.java
+C:\Users\hp probook\Downloads\MINI_PROJET_BOUTIQUE\MINI_PROJET_BOUTIQUE\src\main\java\com\example\demo\controllers\HomeController.java
+C:\Users\hp probook\Downloads\MINI_PROJET_BOUTIQUE\MINI_PROJET_BOUTIQUE\src\main\java\com\example\demo\controllers\ProduitController.java
+C:\Users\hp probook\Downloads\MINI_PROJET_BOUTIQUE\MINI_PROJET_BOUTIQUE\src\main\java\com\example\demo\DemoApplication.java
+C:\Users\hp probook\Downloads\MINI_PROJET_BOUTIQUE\MINI_PROJET_BOUTIQUE\src\main\java\com\example\demo\entities\Client.java
+C:\Users\hp probook\Downloads\MINI_PROJET_BOUTIQUE\MINI_PROJET_BOUTIQUE\src\main\java\com\example\demo\entities\Commande.java
+C:\Users\hp probook\Downloads\MINI_PROJET_BOUTIQUE\MINI_PROJET_BOUTIQUE\src\main\java\com\example\demo\entities\CommandePk.java
+C:\Users\hp probook\Downloads\MINI_PROJET_BOUTIQUE\MINI_PROJET_BOUTIQUE\src\main\java\com\example\demo\entities\Produit.java
+C:\Users\hp probook\Downloads\MINI_PROJET_BOUTIQUE\MINI_PROJET_BOUTIQUE\src\main\java\com\example\demo\repositories\ClientRepository.java
+C:\Users\hp probook\Downloads\MINI_PROJET_BOUTIQUE\MINI_PROJET_BOUTIQUE\src\main\java\com\example\demo\repositories\CommandeRepository.java
+C:\Users\hp probook\Downloads\MINI_PROJET_BOUTIQUE\MINI_PROJET_BOUTIQUE\src\main\java\com\example\demo\repositories\ProduitRepository.java
+C:\Users\hp probook\Downloads\MINI_PROJET_BOUTIQUE\MINI_PROJET_BOUTIQUE\src\main\java\com\example\demo\services\StatisticsService.java

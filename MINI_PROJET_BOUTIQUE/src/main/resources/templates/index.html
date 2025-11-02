@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boutique Marocaine - Gestion</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --zellij-red: #c41e3a;
+            --zellij-blue: #0066cc;
+            --zellij-green: #00a651;
+            --zellij-gold: #f4c430;
+            --zellij-orange: #ff6b35;
+            --zellij-dark: #2c3e50;
+            --zellij-light: #ecf0f1;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--zellij-red) !important;
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(196, 30, 58, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(196, 30, 58, 0.15);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--zellij-red), var(--zellij-orange));
+            color: white;
+            padding: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, var(--zellij-gold) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, var(--zellij-blue) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, var(--zellij-green) 0%, transparent 50%);
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .hero-section .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-primary {
+            background: var(--zellij-red);
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: var(--zellij-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(196, 30, 58, 0.3);
+        }
+        
+        .btn-outline-primary {
+            color: var(--zellij-red);
+            border-color: var(--zellij-red);
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--zellij-red);
+            border-color: var(--zellij-red);
+            transform: translateY(-2px);
+        }
+        
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .table thead {
+            background: linear-gradient(135deg, var(--zellij-red), var(--zellij-orange));
+            color: white;
+        }
+        
+        .table thead th {
+            border: none;
+            font-weight: 600;
+        }
+        
+        .badge {
+            font-weight: 500;
+            border-radius: 6px;
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, var(--zellij-red), var(--zellij-orange));
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stats-card h3 {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="bi bi-shop"></i> Boutique Marocaine
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/admin/dashboard}">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a class="nav-link" th:href="@{/clients}">
+                    <i class="bi bi-people"></i> Clients
+                </a>
+                <a class="nav-link" th:href="@{/produits}">
+                    <i class="bi bi-box"></i> Produits
+                </a>
+                <a class="nav-link" th:href="@{/commandes}">
+                    <i class="bi bi-cart"></i> Commandes
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-4">
+                <i class="bi bi-shop"></i> Gestion de la Boutique Marocaine
+            </h1>
+            <p class="lead mb-4">Gérez vos produits artisanaux, clients et commandes</p>
+            <div class="row justify-content-center">
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="stats-card">
+                        <i class="bi bi-people fs-2 mb-2"></i>
+                        <h3 th:text="${clients != null ? #lists.size(clients) : '0'}">0</h3>
+                        <p>Clients</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="stats-card">
+                        <i class="bi bi-box fs-2 mb-2"></i>
+                        <h3 th:text="${produits != null ? #lists.size(produits) : '0'}">0</h3>
+                        <p>Produits</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="stats-card">
+                        <i class="bi bi-cart-check fs-2 mb-2"></i>
+                        <h3 th:text="${commandes != null ? #lists.size(commandes) : '0'}">0</h3>
+                        <p>Commandes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Actions Rapides</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <div class="fs-1 text-primary mb-3">
+                                <i class="bi bi-person-plus"></i>
+                            </div>
+                            <h5 class="card-title">Ajouter un Client</h5>
+                            <p class="card-text">Enregistrer un nouveau client dans la boutique</p>
+                            <a th:href="@{/clients/signup}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle"></i> Nouveau Client
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <div class="fs-1 text-success mb-3">
+                                <i class="bi bi-box-plus"></i>
+                            </div>
+                            <h5 class="card-title">Ajouter un Produit</h5>
+                            <p class="card-text">Ajouter un nouveau produit au catalogue</p>
+                            <a th:href="@{/produits/signup}" class="btn btn-success">
+                                <i class="bi bi-plus-circle"></i> Nouveau Produit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <div class="fs-1 text-warning mb-3">
+                                <i class="bi bi-cart-plus"></i>
+                            </div>
+                            <h5 class="card-title">Gérer les Commandes</h5>
+                            <p class="card-text">Suivre et gérer les commandes des clients</p>
+                            <a th:href="@{/commandes}" class="btn btn-warning">
+                                <i class="bi bi-list"></i> Voir les Commandes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Data Preview -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-people"></i> Clients Récents
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div th:if="${clients != null and !#lists.isEmpty(clients)}">
+                                <ul class="list-unstyled">
+                                    <li th:each="client : ${clients}" th:if="${clientStat.index < 5}" 
+                                        th:with="clientStat=${#strings.listSplit(#strings.substringAfter(#strings.toString(client), 'Client'), ',')}">
+                                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                            <div>
+                                                <strong th:text="${client.nom}">Nom Client</strong>
+                                                <br>
+                                                <small class="text-muted" th:text="${client.email}">email@example.com</small>
+                                            </div>
+                                            <div>
+                                                <a th:href="@{/clients/edit/{id}(id=${client.id})}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a th:href="@{/clients/delete/{id}(id=${client.id})}" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div th:if="${clients == null or #lists.isEmpty(clients)}" class="text-center text-muted py-3">
+                                <i class="bi bi-people fs-1"></i>
+                                <p>Aucun client enregistré</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-box"></i> Produits Récents
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div th:if="${produits != null and !#lists.isEmpty(produits)}">
+                                <ul class="list-unstyled">
+                                    <li th:each="produit : ${produits}" th:if="${produitStat.index < 5}">
+                                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                            <div>
+                                                <strong th:text="${produit.nom}">Nom Produit</strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    <span th:text="${produit.categorie}">Catégorie</span> - 
+                                                    <span th:text="${#numbers.formatDecimal(produit.prix, 0, 2)} + ' MAD'">0.00 MAD</span>
+                                                </small>
+                                            </div>
+                                            <div>
+                                                <span th:class="${produit.statut} ? 'badge bg-success' : 'badge bg-danger'"
+                                                      th:text="${produit.statut} ? 'En stock' : 'Rupture'">Statut</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div th:if="${produits == null or #lists.isEmpty(produits)}" class="text-center text-muted py-3">
+                                <i class="bi bi-box fs-1"></i>
+                                <p>Aucun produit enregistré</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p>&copy; 2024 Ma Boutique. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
