@@ -1,5 +1,10 @@
 # Boutique Marocaine - Système de Gestion Commerciale
 
+## Le lien vers la video : 
+
+https://drive.google.com/drive/folders/18EhEyPxxJrTsg_Z-O36oe9U5jnxr9YxV?usp=sharing
+
+  
 ## 1. Description du projet
 
 **Contexte fonctionnel :**
